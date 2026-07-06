@@ -1,0 +1,17 @@
+Record_Id,Name, Age,Gender,Race,Insurance,ESI_Level,Chronic Pain Condition Diagnosis,Pain_Type,Medications / interventions for pain prior to arrival?,Aroma,Art,Mindful App,Mindful Listening,Music,Dog
+1, John Smith,45,Male,White,BCBS,3,Sickle Cell,Musculoskeletal,Yes,1,0,0,0,0,0
+2, Sarah Jones,29,Female,Black,United,2,Other,Abdominal,No,0,0,1,0,0,0
+3,Mike Bishop,37,Male,White,Aetea,5,Cancer,Chest,Yes,0,0,0,0,0,0
+4,Steve Gilbert,24,Male,White,BCBS,1,Missing,Headache,Missing,0,0,0,1,0,0
+5,Alice Hartman,62,Female,Hispanic,BCBS,4,Cancer,Extremity,No,0,1,0,0,0,0
+6,Brian Hopkins,41,Male,White,Aetea,2,Sickle Cell,Acute trauma,Yes,0,0,0,1,0,0
+7,Meghan Buckholtz,32,Female,Black,United,3,Cancer,Missing,Not Documented,0,0,0,0,0,1
+8,Vidya Pandey,49,Female,Asian,BCBS,5,Sickle Cell,Abdominal,Yes,0,0,0,0,1,0
+9, John Smith,35,Male,White,United,3,Sickle Cell,Acute trauma,No,0,0,1,0,0,0
+10, Sarah Jones,73,Female,Black,United,1,Other,Abdominal,Yes,1,0,0,0,0,0
+11,Mike Bishop,25,Male,White,Aetea,4,Cancer,Headache,No,0,0,0,1,0,0
+12,Steve Gilbert,45,Male,White,BCBS,5,Missing,Chest,Not Documented,0,0,0,0,1,0
+13,Alice Hartman,39,Female,Hispanic,Aetea,2,Cancer,Musculoskeletal,Yes,0,0,1,0,0,0
+14,Brian Hopkins,55,Male,White,Aetea,4,Sickle Cell,Acute trauma,No,0,1,0,0,0,0
+15,Meghan Buckholtz,42,Female,Black,United,2,Cancer,Headache,Not Documented,0,0,0,0,1,0
+16,Vidya Pandey,58,Female,Asian,BCBS,1,Sickle Cell,Abdominal,Yes,1,0,0,0,0,0

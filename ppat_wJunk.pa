@@ -1,0 +1,237 @@
+# -----------------------------------------------------------------------
+# This script processes patient trial data from a csv file
+# 
+# Example usage:
+# python process_patient_trials_data.py patient_data_input_file=C:\Backup\Neha\Jobs\Albany_Medical_Center\Work_Place_Tasks\Pain_Dummy_Data_Input.csv project=2
+# -----------------------------------------------------------------------
+
+import os
+import sys
+import csv
+import numpy as np
+
+patient_attribute_array = ['Record_Id', 'Name', 'Age', 'Gender', 'Race', 'Insurance',\
+                           'ESI_Level', 'Chronic Pain Condition Diagnosis', 'Pain_Type',\
+                           'Medications / interventions for pain prior to arrival?']                     
+
+                            # 'Admitted', 'Recd_Prior_Med', 'Recd_Prio_Opioids']
+
+patient_attr_analyze_array = ['Gender', 'Race', 'ESI_Level', 'Chronic Pain Condition Diagnosis', 'Pain_Type', 'Medications / interventions for pain prior to arrival?']
+patient_attr_values_array_of_arrays = [['Male', 'Female', 'Other'], ['White', 'Black', 'Hispanic', 'Asian', 'Unknown'],\
+                                       [1, 2, 3, 4, 5], ['Cancer', 'Sickle Cell', 'Other', 'None', 'Missing'],\
+                                       ['Musculoskeletal', 'Back/neck', 'Chest', 'Abdominal', 'Headache', 'Extremity', 'Acute trauma', 'Other', 'Missing'],\
+                                       ['Yes', 'No', 'Not Documented', 'Missing']]    
+
+patient_attribute_dict = {'Gender': ['Male', 'Female', 'Other'],\
+                           'Race': ['White', 'Black', 'Hispanic', 'Asian', 'Unknown'],\
+                           'ESI_Level': [1, 2, 3, 4, 5],\
+                           'Chronic Pain Condition Diagnosis': ['Cancer', 'Sickle Cell', 'Other', 'None', 'Missing'],\
+                           'Pain_Type': ['Musculoskeletal', 'Back/neck', 'Chest', 'Abdominal', 'Headache', 'Extremity', 'Acute trauma', 'Other', 'Missing'],\
+                           'Medications / interventions for pain prior to arrival?': ['Yes', 'No', 'Not Documented', 'Missing']}
+                           
+# patient_reqd_attr_array = ['Record_Id', 'Age', 'Gender', 'Race', 'Insurance', 'ESI', 'Admitted']
+
+patient_cannabis_ques_array = ['Cannabis Harmfulness Score', 'Cannabis Addictiveness Score', 'Cannabis Harmful', 'Cannabis Addictive']
+
+patient_therapy_ques_array = ['Aroma', 'Art',' Mindful App', 'Mindful Listening', 'Music', 'Dog']
+
+patient_project_id_dict = {1: 'Cannabis', 2: 'Therapy'}
+                           
+patient_project_ques_array_dict = {'Cannabis': patient_cannabis_ques_array,\
+                                   'Therapy':  patient_therapy_ques_array}
+
+class patient_struct:
+   def __init__(self):
+      self.patient_id = 0
+      self.name = ''
+      self.age = 0
+      self.gender = ''
+      self.race = ''
+      self.insurance = ''
+      self.esi = 0
+      self.diagnosis = ''
+      self.pain_type = ''
+      self.medications = 0
+      
+      # self.recd_prior_med = 0
+      # self.recd_prior_opioids = 0
+      
+class patient_ques_struct:
+   def __init__(self):
+      self.ques_id = 0
+      self.ques_text = ''
+
+class patient_answer_struct:
+   def __init__(self):
+      self.ques = ''
+      self.patient_id = 0
+      self.score_answer = 0
+
+class patient_attr_val_struct:
+   def __init__(self):
+      self.attr = ''
+      self.attr_val_array = []
+      self.attr_answer_val_array = []
+
+def main_line(argv):
+
+   if (len(argv) < 2):
+      print(' ***** MUST provide at least 1 argument: path to a patient data csv file')
+      sys.exit()
+   # } if (len(argv) < 2)..
+   
+   patient_data_input_file = ''
+   project = 0
+   
+   for a in argv:
+      indx = a.find('=')
+      name = a[:indx].strip()
+      value = a[indx+1:].strip()
+      
+      if (name.lower() == 'patient_data_input_file'): # required, if other command line arguments not supplied 
+         patient_data_input_file = value
+      elif (name.lower() == 'project'):
+         project = int(value)
+      # } if (name.lower() == 'patient_data_input_file'..
+   # } for a in argv..
+   
+   if (patient_data_input_file != ''):
+      if (not os.path.exists(patient_data_input_file)):
+         print(' ***** PATIENT INPUT FILE DOES NOT EXIST ****** ')
+         sys.exit()
+      elif (project == 0):
+         print(' ***** MUST SPECIFY PROJECT (1: CANNABIS, 2: THERAPY) ****** ')
+         sys.exit()
+      else:
+         (fin_filepath, fin_filename) = os.path.split(patient_data_input_file)
+         
+         output_csv_filename = fin_filename[:-4] + '_' + patient_project_id_dict[project] + '.csv'
+         
+         fout_csv_file = open(os.path.join(fin_filepath, output_csv_filename), "w")
+
+         fin_file = open(patient_data_input_file, 'r')
+
+         cntLine = 0
+         header_array = []
+         header_patient_attr_array = []
+         header_ques_array = []
+         patient_ques_array = patient_project_ques_array_dict[patient_project_id_dict[project]]
+         
+         patient_answer_dict = {}
+
+         patient_attr_analyze_array = ['Gender', 'Race', 'ESI_Level', 'Chronic Pain Condition Diagnosis', 'Pain_Type', 'Medications / interventions for pain prior to arrival?']
+         patient_attr_values_array_of_arrays = [['Male', 'Female', 'Other'], ['White', 'Black', 'Hispanic', 'Asian', 'Unknown'],\
+                                                [1, 2, 3, 4, 5], ['Cancer', 'Sickle Cell', 'Other', 'None', 'Missing'],\
+                                                ['Musculoskeletal', 'Back/neck', 'Chest', 'Abdominal', 'Headache', 'Extremity', 'Acute trauma', 'Other', 'Missing'],\
+                                                ['Yes', 'No', 'Not Documented', 'Missing']]    
+         
+         patient_attr_values_response_array_of_arrays = [[]]
+         
+         for line in fin_file:
+            line = line.strip()
+            if (line == ''): # ignore blank lines in input file
+               continue
+            # } if (line == '')..   
+            
+            cntLine += 1
+            
+            # Header line in patient data file
+            if (cntLine == 1):
+               token_array = line.strip().split(',')
+               cnt = 0
+               for t in token_array:
+                 cnt += 1
+                 
+                 header_array.append(t)
+                 
+                 if (t.strip().lower() in [p.lower() for p in patient_attribute_array]): 
+                    header_patient_attr_array.append(t.strip())
+                 elif (t.strip().lower() in [q.lower() for q in patient_ques_array]):
+                    header_ques_array.append(t.strip())
+                 # } if (t.strip().lower() in..                                         
+               # } for t in token_array..
+               
+               # fout_csv_file.write('\n')
+               
+            else:
+               token_array = line.strip().split(',')
+               
+               ps = patient_struct()
+               # as = patient_answer_struct()
+      
+               for (i, t) in enumerate(token_array):
+                  if (header_array[i] in patient_attr_analyze_array):
+                     # indx = patient_attribute_array.index(header_array[i])
+                     
+                     indx = patient_attr_analyze_array.index(header_array[i])
+                     patient_attr_values_array = patient_attr_values_array_of_arrays[indx]
+                     indx = patient_attr_values_array.index(t)
+                     patient_attr_values_response_array_of_arrays[indx] += 1
+
+                     if (indx == 0):
+                        ps.patient_id = int(t)
+                     elif (indx == 1):
+                        ps.name = t
+                     elif (indx == 2):
+                        ps.age = int(t)
+                     elif (indx == 3):
+                        ps.gender = t
+                        attr_value_indx = attr_value_array.index(t)
+                        
+                        
+                        attr_value_array = patient_attribute_dict['Gender']
+                        attr_value_indx = attr_value_array.index(t)
+                        
+                        if (attr_value_indx not in patient_attr_value_dict['Gender']):
+                           patient_attr_value_dict['Gender'][attr_value_indx] = []
+
+                        if (attr_value_indx not in patient_attr_value_dict['Gender']):
+                           patient_attr_value_dict['Gender'][attr_value_indx] = []
+                        
+                        patient_attr_value_dict['Gender'][attr_value_indx].append 
+                        
+                        ['Male', 'Female', 'Other'],\
+                        
+                           'Race': ['White', 'Black', 'Hispanic', 'Asian', 'Unknown'],\
+                           'ESI_Level': [1, 2, 3, 4, 5],\
+                           'Chronic Pain Condition Diagnosis': ['Cancer', 'Sickle Cell', 'Other', 'None', 'Missing'],\
+                           'Pain_Type': ['Musculoskeletal', 'Back/neck', 'Chest', 'Abdominal', 'Headache', 'Extremity', 'Acute trauma', 'Other', 'Missing'],\
+                           'Medications / interventions for pain prior to arrival?': ['Yes', 'No', 'Not Documented', 'Missing']}
+
+                     elif (indx == 4):
+                        ps.race = t
+                     elif (indx == 5):
+                        ps.insurance = t
+                     elif (indx == 6):                         `
+                        ps.esi = int(t)
+                     elif (indx == 7):
+                        ps.diagnosis = t
+                     elif (indx == 8):
+                        ps.pain_type = t
+                     elif (indx == 9):
+                        ps.medications = t
+                     # } if (indx == 0)..                       
+               
+                  elif (header_array[i].lower() in header_ques_array):
+                     # indx = header_ques_array.index(header_array[i])
+                     # as.ques = header_array[i]
+                     # as.score_answer = int(t)
+                     # as.patient_id = ps.patient_id
+                     
+                     patient_answer_dict[ps.patient_id + '_' + header_array[i]] = int(t)
+                     # patient_answer_dict[as.ques] = int(t)
+                     # patient_all_answers_dict[ps.patient_id].app
+          
+                  # } if (header_array[i] in..   
+               # } for (i, t) in enumerate(token_array)..
+            # } if (cntLine == 1)..
+         # } for line in fin_file..
+         
+         fout_csv_file.close()
+         fin_file.close()
+         
+if(__name__ == "__main__"):
+  main_line(sys.argv)
+
+
+
