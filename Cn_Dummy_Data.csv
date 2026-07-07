@@ -1,0 +1,9 @@
+Record_Id,Name, Age,Gender,Race,Insurance,Cannabis Harmfulness Score,Cannabis Addictiveness Score,Cannabis Harmful,Cannabis Addictive,Aroma,Art,Mindful App,Mindful Listening,Music,Dog
+1, John Smith,45,Male,White,BCBS,5,7,Yes,No,Yes,No,Yes,No,No,Yes
+2, Sarah Jones,29,Female,Black,United,3,4,No,Yes,No,No,Yes,Yes,No,No
+3,Mike Bishop,37,Male,White,Aetea,5,1,Yes,Yes,Yes,Yes,No,No,Yes,No
+4,Steve Gilbert,24,Male,White,BCBS,4,6,No,No,No,No,No,No,No,No
+5,Alice Hartman,62,Female,Hispanic,BCBS,2,3,Yes,No,Yes,Yes,Yes,No,No,Yes
+6,Brian Hopkins,41,Male,White,Aetea,7,2,Yes,Yes,No,No,No,Yes,No,No
+7,Meghan Buckholtz,32,Female,Black,United,5,6,Yes,No,No,Yes,No,No,No,No
+8,Vidya Pandey,49,Female,Asian,BCBS,6,7,No,Yes,Yes,No,No,No,No,Yes

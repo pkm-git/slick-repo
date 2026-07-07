@@ -1,0 +1,7 @@
+Age,,,,,
+<45, # of instances, column %, odds ratio, 95% confidence interval, p-value
+>=45, # of instances, column %, odds ratio, 95% confidence interval, p-value
+Race,,,,,
+White, # of instances, column %, odds ratio, 95% confidence interval, p-value
+Black, # of instances, column %, odds ratio, 95% confidence interval, p-value
+Asian, # of instances, column %, odds ratio, 95% confidence interval, p-value
